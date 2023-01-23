@@ -132,7 +132,7 @@ const estilos = StyleSheet.create({
   },
   titulo: {
     fontSize: "20px",
-    color: "black",
+    color: "green",
   },
   borda: {
     borderWidth: "1px",
