@@ -85,7 +85,11 @@ export default function ImagePickerExample() {
         </View>
 
         <View style={estilos.botao}>
-          <Button title="Tirar uma foto" onPress={acessarCamera} />
+          <Button
+            title="Tirar uma foto"
+            onPress={acessarCamera}
+            color="white"
+          />
         </View>
 
         <View>
@@ -104,7 +108,11 @@ export default function ImagePickerExample() {
               )}
             </MapView>
             <View style={estilos.botao}>
-              <Button title="Localizar no mapa" onPress={marcarLocal} />
+              <Button
+                title="Localizar no mapa"
+                onPress={marcarLocal}
+                color="white"
+              />
             </View>
           </View>
         </View>
@@ -143,5 +151,6 @@ const estilos = StyleSheet.create({
   botao: {
     borderWidth: "1px",
     width: 300,
+    backgroundColor: "blue",
   },
 });
