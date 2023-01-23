@@ -1,22 +1,42 @@
+import React, { useState, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
-import { Button, StyleSheet, Text, View, Image } from "react-native";
+import {
+  Button,
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TextInput,
+  SafeAreaView,
+} from "react-native";
 import * as ImagePicker from "expo-image-picker";
+import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
-import MapView from "react-native-maps";
-import { useEffect, useState } from "react";
 
 export default function ImagePickerExample() {
   const [status, requestPermission] = ImagePicker.useCameraPermissions();
   const [foto, setFoto] = useState();
-  const [minhaLocalizacao, setMinhaLocalizacao] = useState(null);
+  const [titulo, onChangeText] = useState();
 
-  useEffect(() => {
+  const obterTitulo = useEffect(() => {
     async function verificarPermissao() {
       const cameraStatus = await ImagePicker.requestCameraPermissionsAsync();
       requestPermission(cameraStatus === "granted");
     }
     verificarPermissao();
   }, []);
+
+  const acessarCamera = async () => {
+    const image = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [16, 9],
+      quality: 0.5,
+    });
+    console.log(image);
+    setFoto(image.assets[0].uri);
+  };
+
+  const [minhaLocalizacao, setMinhaLocalizacao] = useState(null);
 
   useEffect(() => {
     async function obterLocalizacao() {
@@ -30,35 +50,98 @@ export default function ImagePickerExample() {
   }, []);
   console.log(minhaLocalizacao);
 
-  const [localizao, setLocalizacao] = useState();
+  const regiaoInicial = {
+    latitude: -23.533773,
+    longitude: -46.65529,
+    latitudeDelta: 10,
+    longitudeDelta: 10,
+  };
 
-  const marcarLocal = () => {};
+  const [localizacao, setLocalizacao] = useState();
 
-  const acessarCamera = async () => {
-    const imagem = await ImagePicker.launchCameraAsync({
-      allowsEditing: true,
-      aspect: [16, 9],
-      quality: 1,
+  const marcarLocal = () => {
+    console.log(minhaLocalizacao);
+    setLocalizacao({
+      latitudeDelta: 0.0922,
+      longitudeDelta: 0.0421,
+      ...minhaLocalizacao,
     });
-    console.log(imagem);
-    setFoto(imagem.assets[0].uri);
   };
 
   return (
-    <View style={styles.container}>
-      <Button title="Acessar a câmera" onPress={acessarCamera} />
-      {foto && (
-        <Image source={{ uri: foto }} style={{ width: 300, height: 200 }} />
-      )}
-    </View>
+    <>
+      <StatusBar />
+      <SafeAreaView style={estilos.container}>
+        <View style={estilos.borda}>
+          <TextInput
+            style={estilos.titulo}
+            onChangeText={onChangeText}
+            placeholder="Escreva o nome do lugar"
+          />
+        </View>
+
+        <View style={estilos.foto}>
+          <Image source={{ uri: foto }} style={estilos.imagem} />
+        </View>
+
+        <View style={estilos.botao}>
+          <Button title="Tirar uma foto" onPress={acessarCamera} />
+        </View>
+
+        <View>
+          <View>
+            <MapView
+              style={estilos.mapa}
+              region={localizacao ?? regiaoInicial}
+              mapType="standard"
+            >
+              {localizacao && (
+                <Marker
+                  coordinate={localizacao}
+                  title="aquiii"
+                  onPress={(e) => console.log(e.nativeEvent)}
+                />
+              )}
+            </MapView>
+            <View style={estilos.botao}>
+              <Button title="Localizar no mapa" onPress={marcarLocal} />
+            </View>
+          </View>
+        </View>
+      </SafeAreaView>
+    </>
   );
 }
 
-const styles = StyleSheet.create({
+const estilos = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
+  },
+  imagem: {
+    width: 300,
+    height: 200,
+    marginVertical: 16,
+  },
+  mapa: {
+    width: 300,
+    height: 200,
+    marginVertical: 16,
+  },
+  titulo: {
+    fontSize: "20px",
+    color: "black",
+  },
+  borda: {
+    borderWidth: "1px",
+    width: 300,
+    height: 30,
+    alignItems: "center",
+  },
+  botao: {
+    borderWidth: "1px",
+    width: 300,
   },
 });
