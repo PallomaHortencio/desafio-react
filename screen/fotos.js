@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { View, Text } from "react-native";
 
 const Fotos = () => {
   const [listaFotos, setListaFotos] = useState([]);
@@ -19,13 +20,23 @@ const Fotos = () => {
       }
     }
     carregarFotos;
+    console.log(listaFotos);
   }, []);
 
   return (
     <View>
       <Text>Fotos</Text>
+      <Image source={{ uri: listaFotos }} style={estilos.imagem} />
     </View>
   );
 };
 
 export default Fotos;
+
+const estilos = StyleSheet.create({
+  imagem: {
+    width: 300,
+    height: 200,
+    marginVertical: 16,
+  },
+});
